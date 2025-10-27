@@ -4,6 +4,7 @@ import "../style/list.css";
 
 export default function List() {
   const [taskData, setTaskData] = useState();
+  const [selectedTasks, setSelectedTasks] = useState([]);
 
   useEffect(() => {
     getListData();
@@ -27,10 +28,31 @@ export default function List() {
       getListData();
     }
   };
+
+  const selectAll = (event) => {
+    if (event.target.checked) {
+      let items = taskData.map((item) => item._id);
+
+      setSelectedTasks(items);
+    } else {
+      setSelectedTasks([]);
+    }
+  };
+
+  const setSingleItem = (id) => {
+    if (selectedTasks.includes(id)) {
+      setSelectedTasks(selectedTasks.filter((item) => item !== id));
+    } else {
+      setSelectedTasks([...selectedTasks, id]);
+    }
+  };
   return (
     <div>
       <h1>Task List</h1>
       <ul className="task-list">
+        <li className="list-header">
+          <input onChange={selectAll} type="checkbox" />
+        </li>
         <li className="list-header">S.No</li>
         <li className="list-header">Title</li>
         <li className="list-header">Description</li>
@@ -39,6 +61,15 @@ export default function List() {
         {taskData &&
           taskData.map((item, index) => (
             <Fragment key={item._id}>
+              <li className="list-item">
+                <input
+                  checked={selectedTasks.includes(item._id)}
+                  type="checkbox"
+                  onChange={() => {
+                    setSingleItem(item._id);
+                  }}
+                />
+              </li>
               <li className="list-item">{index + 1}</li>
               <li className="list-item">{item.title}</li>
               <li className="list-item">{item.description}</li>
