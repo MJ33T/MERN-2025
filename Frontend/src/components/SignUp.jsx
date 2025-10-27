@@ -1,8 +1,24 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "../style/addtask.css";
 export default function SignUp() {
   const [userData, setUserData] = useState();
+  const navigate = useNavigate();
+
+  const handleSignup = async () => {
+    let response = await fetch("http://localhost:3000/signup", {
+      method: "post",
+      body: JSON.stringify(userData),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    response = await response.json();
+    if (response.success) {
+      document.cookie = "token=" + response.token;
+      navigate("/");
+    }
+  };
   return (
     <>
       <div className="container">
@@ -35,7 +51,7 @@ export default function SignUp() {
           placeholder="Enter your password"
         />
 
-        <button onClick={() => console.log(userData)} type="submit">
+        <button onClick={() => handleSignup()} type="submit">
           Sign Up
         </button>
         <Link className="link" to="/login">
