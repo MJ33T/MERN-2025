@@ -5,7 +5,6 @@ export default function UpdateTask() {
   const [taskData, setTaskData] = useState();
   const navigate = useNavigate();
   const { id } = useParams();
-  const handleUpdateTask = async () => {};
 
   useEffect(() => {
     getTask(id);
@@ -17,6 +16,22 @@ export default function UpdateTask() {
 
     if (task.data) {
       setTaskData(task.data);
+    }
+  };
+
+  const handleUpdateTask = async () => {
+    console.log(taskData);
+    let task = await fetch(`http://localhost:3000/update-task`, {
+      method: "put",
+      body: JSON.stringify(taskData),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    task = await task.json();
+    if (task) {
+      navigate("/");
     }
   };
 

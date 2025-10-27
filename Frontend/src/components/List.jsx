@@ -46,9 +46,27 @@ export default function List() {
       setSelectedTasks([...selectedTasks, id]);
     }
   };
+
+  const deleteMultiple = async () => {
+    let item = await fetch(`http://localhost:3000/delete-task-multiple`, {
+      method: "delete",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ ids: selectedTasks }),
+    });
+
+    item = await item.json();
+    if (item.success) {
+      getListData();
+    }
+  };
   return (
-    <div>
+    <div className="list-container">
       <h1>Task List</h1>
+      <button onClick={deleteMultiple} className="delete-item delete-multiple">
+        Delete
+      </button>
       <ul className="task-list">
         <li className="list-header">
           <input onChange={selectAll} type="checkbox" />

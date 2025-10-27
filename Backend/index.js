@@ -42,6 +42,24 @@ app.get("/tasks", async (req, res) => {
     res.send({ message: "Failed to fetch tasks", success: false, data: null });
   }
 });
+
+app.put("/update-task", async (req, res) => {
+  const db = await connection();
+  const collection = await db.collection(collectionName);
+  const { _id, ...rest } = req.body;
+  const update = { $set: rest };
+  const result = await collection.updateOne({ _id: new ObjectId(_id) }, update);
+
+  if (result) {
+    res.send({
+      message: "Task updated successfully",
+      success: true,
+      data: result,
+    });
+  } else {
+    res.send({ message: "Failed to update task", success: false, data: null });
+  }
+});
 app.delete("/delete-task/:id", async (req, res) => {
   const id = req.params.id;
   const db = await connection();
@@ -73,6 +91,26 @@ app.get("/task/:id", async (req, res) => {
     });
   } else {
     res.send({ message: "Failed to fetch task", success: false, data: null });
+  }
+});
+
+app.delete("/delete-task-multiple", async (req, res) => {
+  const db = await connection();
+  const Ids = req.body;
+
+  const deleteTaskIds = Ids.ids.map((id) => new ObjectId(id));
+
+  const collection = db.collection(collectionName);
+  const result = await collection.deleteMany({ _id: { $in: deleteTaskIds } });
+
+  if (result) {
+    res.send({
+      message: "Tasks deleted successfully",
+      success: true,
+      data: result,
+    });
+  } else {
+    res.send({ message: "Failed to delete tasks", success: false, data: null });
   }
 });
 
