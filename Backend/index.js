@@ -36,6 +36,38 @@ app.post("/signup", async (req, res) => {
   }
 });
 
+app.post("/login", async (req, res) => {
+  const userData = req.body;
+  if (userData.email && userData.password) {
+    const db = await connection();
+    const collection = db.collection("users");
+    const result = await collection.findOne({
+      email: userData.email,
+      password: userData.password,
+    });
+    if (result) {
+      jwt.sign(userData, "google", { expiresIn: "2h" }, (err, token) => {
+        if (err) {
+          res.send({ message: "Error in token generation", success: false });
+        } else {
+          res.send({
+            message: "User signed up successfully",
+            success: true,
+            token,
+          });
+        }
+      });
+    } else {
+      res.send({
+        message: "User Not Found or Invalid Password",
+        success: false,
+      });
+    }
+  } else {
+    res.send({ message: "Failed to Login", success: false });
+  }
+});
+
 app.post("/add-task", async (req, res) => {
   const db = await connection();
   const collection = db.collection(collectionName);
