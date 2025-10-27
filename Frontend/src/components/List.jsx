@@ -11,7 +11,9 @@ export default function List() {
   }, []);
 
   const getListData = async () => {
-    let list = await fetch("http://localhost:3000/tasks");
+    let list = await fetch("http://localhost:3000/tasks", {
+      credentials: "include",
+    });
     list = await list.json();
     if (list.success) {
       setTaskData(list.data);

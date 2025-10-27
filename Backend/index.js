@@ -1,3 +1,4 @@
+import cookieParser from "cookie-parser";
 import cors from "cors";
 import express from "express";
 import jwt from "jsonwebtoken";
@@ -7,8 +8,13 @@ import { collectionName, connection } from "./dbconfig.js";
 const app = express();
 
 app.use(express.json());
-
-app.use(cors());
+app.use(cookieParser());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
 
 app.use(express.urlencoded({ extended: true }));
 
@@ -84,8 +90,9 @@ app.post("/add-task", async (req, res) => {
     res.send({ message: "Failed to add task", success: false, data: null });
   }
 });
-app.get("/tasks", async (req, res) => {
+app.get("/tasks", verifyJWTToken, async (req, res) => {
   const db = await connection();
+
   const collection = db.collection(collectionName);
   const result = await collection.find().toArray();
 
@@ -99,6 +106,18 @@ app.get("/tasks", async (req, res) => {
     res.send({ message: "Failed to fetch tasks", success: false, data: null });
   }
 });
+
+function verifyJWTToken(req, res, next) {
+  const token = req.cookies["token"];
+  jwt.verify(token, "google", (err, decoded) => {
+    if (err) {
+      return res
+        .status(401)
+        .send({ message: "Unauthorized Access", success: false });
+    }
+    next();
+  });
+}
 
 app.put("/update-task", async (req, res) => {
   const db = await connection();
