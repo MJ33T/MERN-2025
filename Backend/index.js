@@ -1,5 +1,6 @@
 import cors from "cors";
 import express from "express";
+import jwt from "jsonwebtoken";
 import { ObjectId } from "mongodb";
 import { collectionName, connection } from "./dbconfig.js";
 
@@ -10,6 +11,30 @@ app.use(express.json());
 app.use(cors());
 
 app.use(express.urlencoded({ extended: true }));
+
+app.post("/signup", async (req, res) => {
+  const userData = req.body;
+  if (userData.email && userData.password) {
+    const db = await connection();
+    const collection = db.collection("users");
+    const result = await collection.insertOne(userData);
+    if (result) {
+      jwt.sign(userData, "google", { expiresIn: "2h" }, (err, token) => {
+        if (err) {
+          res.send({ message: "Error in token generation", success: false });
+        } else {
+          res.send({
+            message: "User signed up successfully",
+            success: true,
+            token,
+          });
+        }
+      });
+    } else {
+      res.send({ message: "Failed to sign up", success: false });
+    }
+  }
+});
 
 app.post("/add-task", async (req, res) => {
   const db = await connection();
