@@ -1,9 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../style/addtask.css";
 export default function Login() {
   const [userData, setUserData] = useState();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const loggedInUser = localStorage.getItem("login");
+    if (loggedInUser) {
+      navigate("/");
+    }
+  }, []);
 
   const handleLogin = async () => {
     let response = await fetch("http://localhost:3000/login", {
@@ -16,7 +23,11 @@ export default function Login() {
     response = await response.json();
     if (response.success) {
       document.cookie = "token=" + response.token;
+      localStorage.setItem("login", userData.email);
+      window.dispatchEvent(new Event("localStorageChanged"));
       navigate("/");
+    } else {
+      alert("Login failed. Please check your credentials.");
     }
   };
   return (

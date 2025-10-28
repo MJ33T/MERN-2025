@@ -17,17 +17,22 @@ export default function List() {
     list = await list.json();
     if (list.success) {
       setTaskData(list.data);
+    } else {
+      alert("Failed to fetch tasks");
     }
   };
 
   const deleteTask = async (id) => {
     let item = await fetch(`http://localhost:3000/delete-task/${id}`, {
       method: "delete",
+      credentials: "include",
     });
 
     item = await item.json();
     if (item.success) {
       getListData();
+    } else {
+      alert("Failed to delete tasks");
     }
   };
 
@@ -52,6 +57,7 @@ export default function List() {
   const deleteMultiple = async () => {
     let item = await fetch(`http://localhost:3000/delete-task-multiple`, {
       method: "delete",
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
@@ -61,6 +67,8 @@ export default function List() {
     item = await item.json();
     if (item.success) {
       getListData();
+    } else {
+      alert("Failed to delete tasks");
     }
   };
   return (

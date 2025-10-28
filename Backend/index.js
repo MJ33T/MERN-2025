@@ -74,7 +74,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.post("/add-task", async (req, res) => {
+app.post("/add-task", verifyJWTToken, async (req, res) => {
   const db = await connection();
   const collection = db.collection(collectionName);
 
@@ -119,7 +119,7 @@ function verifyJWTToken(req, res, next) {
   });
 }
 
-app.put("/update-task", async (req, res) => {
+app.put("/update-task", verifyJWTToken, async (req, res) => {
   const db = await connection();
   const collection = await db.collection(collectionName);
   const { _id, ...rest } = req.body;
@@ -136,7 +136,7 @@ app.put("/update-task", async (req, res) => {
     res.send({ message: "Failed to update task", success: false, data: null });
   }
 });
-app.delete("/delete-task/:id", async (req, res) => {
+app.delete("/delete-task/:id", verifyJWTToken, async (req, res) => {
   const id = req.params.id;
   const db = await connection();
   const collection = db.collection(collectionName);
@@ -153,7 +153,7 @@ app.delete("/delete-task/:id", async (req, res) => {
   }
 });
 
-app.get("/task/:id", async (req, res) => {
+app.get("/task/:id", verifyJWTToken, async (req, res) => {
   const id = req.params.id;
   const db = await connection();
   const collection = db.collection(collectionName);
@@ -170,7 +170,7 @@ app.get("/task/:id", async (req, res) => {
   }
 });
 
-app.delete("/delete-task-multiple", async (req, res) => {
+app.delete("/delete-task-multiple", verifyJWTToken, async (req, res) => {
   const db = await connection();
   const Ids = req.body;
 

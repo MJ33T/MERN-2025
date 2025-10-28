@@ -1,9 +1,16 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "../style/addtask.css";
 export default function SignUp() {
   const [userData, setUserData] = useState();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const loggedInUser = localStorage.getItem("login");
+    if (loggedInUser) {
+      navigate("/");
+    }
+  }, []);
 
   const handleSignup = async () => {
     let response = await fetch("http://localhost:3000/signup", {
@@ -16,7 +23,10 @@ export default function SignUp() {
     response = await response.json();
     if (response.success) {
       document.cookie = "token=" + response.token;
+      localStorage.setItem("login", userData.email);
       navigate("/");
+    } else {
+      alert("Signup failed. Please try again.");
     }
   };
   return (

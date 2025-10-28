@@ -11,7 +11,9 @@ export default function UpdateTask() {
   }, [id]);
 
   const getTask = async (id) => {
-    let task = await fetch(`http://localhost:3000/task/${id}`);
+    let task = await fetch(`http://localhost:3000/task/${id}`, {
+      credentials: "include",
+    });
     task = await task.json();
 
     if (task.data) {
@@ -24,6 +26,7 @@ export default function UpdateTask() {
     let task = await fetch(`http://localhost:3000/update-task`, {
       method: "put",
       body: JSON.stringify(taskData),
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },

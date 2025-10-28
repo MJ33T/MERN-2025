@@ -9,12 +9,13 @@ export default function AddTask() {
     let result = await fetch("http://localhost:3000/add-task", {
       method: "post",
       body: JSON.stringify(taskData),
+      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },
     });
     result = await result.json();
-    if (result) {
+    if (result.success) {
       navigate("/");
     }
   };
